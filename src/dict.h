@@ -43,7 +43,7 @@
 
 /* Unused arguments generate annoying warnings... */
 #define DICT_NOTUSED(V) ((void) V)
-
+// 字典是单向链表
 typedef struct dictEntry {
     void *key;
     union {
