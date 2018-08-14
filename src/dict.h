@@ -43,21 +43,24 @@
 
 /* Unused arguments generate annoying warnings... */
 #define DICT_NOTUSED(V) ((void) V)
-// 字典是单向链表
+// 哈希表节点结构体
 typedef struct dictEntry {
-    void *key;
+    void *key; // 节点的key
     union {
         void *val;
         uint64_t u64;
         int64_t s64;
         double d;
-    } v;
-    struct dictEntry *next;
+    } v; // 节点的value,可能是多个类型
+    struct dictEntry *next; // 指向下一个哈希表节点的指针，这个指针可以将多个哈希值想听的key链接再一起，解决键值冲突
 } dictEntry;
 
 typedef struct dictType {
+    // 计算哈希值的函数 
     uint64_t (*hashFunction)(const void *key);
+    // 复制建的函数
     void *(*keyDup)(void *privdata, const void *key);
+    // 复制值的函数
     void *(*valDup)(void *privdata, const void *obj);
     int (*keyCompare)(void *privdata, const void *key1, const void *key2);
     void (*keyDestructor)(void *privdata, void *key);
