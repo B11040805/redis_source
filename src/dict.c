@@ -59,7 +59,9 @@
  * Note that even when dict_can_resize is set to 0, not all resizes are
  * prevented: a hash table is still allowed to grow if the ratio between
  * the number of elements and the buckets > dict_force_resize_ratio. */
+// hash表能不能resize是不是设置的？
 static int dict_can_resize = 1;
+// 什么时候会触发resize,强制resize的比值
 static unsigned int dict_force_resize_ratio = 5;
 
 /* -------------------------- private prototypes ---------------------------- */
@@ -144,6 +146,7 @@ int dictResize(dict *d)
 }
 
 /* Expand or create the hash table */
+// 扩展hash表，扩展多大
 int dictExpand(dict *d, unsigned long size)
 {
     /* the size is invalid if it is smaller than the number of
@@ -262,6 +265,7 @@ static void _dictRehashStep(dict *d) {
 }
 
 /* Add an element to the target hash table */
+// 往哈希表中新增一个键值对
 int dictAdd(dict *d, void *key, void *val)
 {
     dictEntry *entry = dictAddRaw(d,key,NULL);
@@ -292,7 +296,7 @@ int dictAdd(dict *d, void *key, void *val)
 dictEntry *dictAddRaw(dict *d, void *key, dictEntry **existing)
 {
     long index;
-    dictEntry *entry;
+    dictEntry *entry; // 键值对的结构提
     dictht *ht;
 
     if (dictIsRehashing(d)) _dictRehashStep(d);
@@ -941,6 +945,7 @@ static int _dictExpandIfNeeded(dict *d)
 }
 
 /* Our hash table capability is a power of two */
+// 最大的long类型
 static unsigned long _dictNextPower(unsigned long size)
 {
     unsigned long i = DICT_HT_INITIAL_SIZE;
@@ -960,6 +965,8 @@ static unsigned long _dictNextPower(unsigned long size)
  *
  * Note that if we are in the process of rehashing the hash table, the
  * index is always returned in the context of the second (new) hash table. */
+// 获取键值对的索引值
+// key已经存在返回-1，是不能更新已经有的key，还是更新已有的key
 static long _dictKeyIndex(dict *d, const void *key, uint64_t hash, dictEntry **existing)
 {
     unsigned long idx, table;
