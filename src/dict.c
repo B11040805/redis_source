@@ -197,10 +197,12 @@ int dictRehash(dict *d, int n) {
     if (!dictIsRehashing(d)) return 0;
 
     while(n-- && d->ht[0].used != 0) {
+        // 指定字典节点的
         dictEntry *de, *nextde;
 
         /* Note that rehashidx can't overflow as we are sure there are more
          * elements because ht[0].used != 0 */
+        // 断言
         assert(d->ht[0].size > (unsigned long)d->rehashidx);
         while(d->ht[0].table[d->rehashidx] == NULL) {
             d->rehashidx++;
@@ -213,6 +215,7 @@ int dictRehash(dict *d, int n) {
 
             nextde = de->next;
             /* Get the index in the new hash table */
+            // 在h1上新计算一个节点
             h = dictHashKey(d, de->key) & d->ht[1].sizemask;
             de->next = d->ht[1].table[h];
             d->ht[1].table[h] = de;
@@ -221,6 +224,7 @@ int dictRehash(dict *d, int n) {
             de = nextde;
         }
         d->ht[0].table[d->rehashidx] = NULL;
+        // 已经refresh节点的个数
         d->rehashidx++;
     }
 
