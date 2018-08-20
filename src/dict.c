@@ -192,6 +192,7 @@ int dictExpand(dict *d, unsigned long size)
  * work it does would be unbound and the function may block for a long time. */
 // 渐进式refresh
 int dictRehash(dict *d, int n) {
+    // 定义 empty_visits
     int empty_visits = n*10; /* Max number of empty buckets to visit. */
     if (!dictIsRehashing(d)) return 0;
 
