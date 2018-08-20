@@ -94,7 +94,8 @@ static void zmalloc_default_oom(size_t size) {
 }
 
 static void (*zmalloc_oom_handler)(size_t) = zmalloc_default_oom;
-
+// zmalloc是线程安全的
+// 如果你的代码所在的进程中有多个线程在同时运行，而这些线程可能会同时运行这段代码。如果每次运行结果和单线程运行的结果是一样的，而且其他的变量的值也和预期的是一样的，就是线程安全的。
 void *zmalloc(size_t size) {
     void *ptr = malloc(size+PREFIX_SIZE);
 

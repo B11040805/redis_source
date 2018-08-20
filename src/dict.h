@@ -54,7 +54,7 @@ typedef struct dictEntry {
     } v; // 节点的value,可能是多个类型
     struct dictEntry *next; // 指向下一个哈希表节点的指针，这个指针可以将多个哈希值想听的key链接再一起，解决键值冲突
 } dictEntry;
-
+// 定义的是函数指针，怎么分辨是函数还是函数指针
 typedef struct dictType {
     // 计算哈希值的函数 
     uint64_t (*hashFunction)(const void *key);
@@ -62,6 +62,7 @@ typedef struct dictType {
     void *(*keyDup)(void *privdata, const void *key);
     // 复制值的函数
     void *(*valDup)(void *privdata, const void *obj);
+    // key比较
     int (*keyCompare)(void *privdata, const void *key1, const void *key2);
     void (*keyDestructor)(void *privdata, void *key);
     void (*valDestructor)(void *privdata, void *obj);
@@ -71,16 +72,20 @@ typedef struct dictType {
  * implement incremental rehashing, for the old to the new table. */
 typedef struct dictht {
     dictEntry **table;
-    unsigned long size;
-    unsigned long sizemask;
-    unsigned long used;
+    unsigned long size; // 
+    unsigned long sizemask; // 
+    unsigned long used; // hash table使用的
 } dictht;
 
 typedef struct dict {
     dictType *type;
     void *privdata;
-    dictht ht[2];
-    long rehashidx; /* rehashing not in progress if rehashidx == -1 */
+    // 你可能会疑问，为什么这个属性是2个大小的数组呢，其实正真使用的是ht[0]，而ht[1]是用于扩容hash表时的暂存数组，这一点也很奇葩，
+    //同时也很精妙，redis为什么会这么做呢？？？仔细想想你可能会明白，扩容有两种方法，要么一次性扩容，要么渐进性扩容，后面这种扩容是什
+    //么意思呢？就是我在扩容的同时不影响前端的CURD，我慢慢的把数据从ht[0]转移到ht[1]中，同时rehashindex来记录转移的情况，当全部转移
+    //完成之后，将ht[1]改成ht[0]使用，就这么简单
+    dictht ht[2]; // key value 真正存储的地方
+    long rehashidx; //渐进式refresh的标志/* rehashing not in progress if rehashidx == -1 */
     unsigned long iterators; /* number of iterators currently running */
 } dict;
 

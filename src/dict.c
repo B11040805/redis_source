@@ -59,7 +59,7 @@
  * Note that even when dict_can_resize is set to 0, not all resizes are
  * prevented: a hash table is still allowed to grow if the ratio between
  * the number of elements and the buckets > dict_force_resize_ratio. */
-// hash表能不能resize是不是设置的？
+// hash表能不能resize是这里设置的，全局静态变量
 static int dict_can_resize = 1;
 // 什么时候会触发resize,强制resize的比值
 static unsigned int dict_force_resize_ratio = 5;
@@ -76,6 +76,7 @@ static int _dictInit(dict *ht, dictType *type, void *privDataPtr);
 static uint8_t dict_hash_function_seed[16];
 
 void dictSetHashFunctionSeed(uint8_t *seed) {
+    // memcpy指的是c和c++使用的内存拷贝函数，memcpy函数的功能是从源src所指的内存地址的起始位置开始拷贝n个字节到目标dest所指的内存地址的起始位置中
     memcpy(dict_hash_function_seed,seed,sizeof(dict_hash_function_seed));
 }
 
@@ -101,6 +102,7 @@ uint64_t dictGenCaseHashFunction(const unsigned char *buf, int len) {
 
 /* Reset a hash table already initialized with ht_init().
  * NOTE: This function should only be called by ht_destroy(). */
+// 销毁hash表
 static void _dictReset(dictht *ht)
 {
     ht->table = NULL;
@@ -146,7 +148,7 @@ int dictResize(dict *d)
 }
 
 /* Expand or create the hash table */
-// 扩展hash表，扩展多大
+// 扩展hash表，扩展到第一次2的n次方大于size的大小
 int dictExpand(dict *d, unsigned long size)
 {
     /* the size is invalid if it is smaller than the number of
@@ -188,6 +190,7 @@ int dictExpand(dict *d, unsigned long size)
  * guaranteed that this function will rehash even a single bucket, since it
  * will visit at max N*10 empty buckets in total, otherwise the amount of
  * work it does would be unbound and the function may block for a long time. */
+// 渐进式refresh
 int dictRehash(dict *d, int n) {
     int empty_visits = n*10; /* Max number of empty buckets to visit. */
     if (!dictIsRehashing(d)) return 0;
@@ -965,7 +968,7 @@ static unsigned long _dictNextPower(unsigned long size)
  *
  * Note that if we are in the process of rehashing the hash table, the
  * index is always returned in the context of the second (new) hash table. */
-// 获取键值对的索引值
+// 获取键值对的索引值 hash算法的核心部分
 // key已经存在返回-1，是不能更新已经有的key，还是更新已有的key
 static long _dictKeyIndex(dict *d, const void *key, uint64_t hash, dictEntry **existing)
 {
@@ -976,7 +979,9 @@ static long _dictKeyIndex(dict *d, const void *key, uint64_t hash, dictEntry **e
     /* Expand the hash table if needed */
     if (_dictExpandIfNeeded(d) == DICT_ERR)
         return -1;
+    // ht[0]和ht[1]都需要处理，是因为refresh是渐进式的
     for (table = 0; table <= 1; table++) {
+        // 下标 等于 key & ht[0].sizemask
         idx = hash & d->ht[table].sizemask;
         /* Search if this slot does not already contain the given key */
         he = d->ht[table].table[idx];
