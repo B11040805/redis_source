@@ -132,10 +132,11 @@ void redisFreeCommand(char *cmd);
 void redisFreeSdsCommand(sds cmd);
 
 enum redisConnectionType {
-    REDIS_CONN_TCP,
-    REDIS_CONN_UNIX
+    REDIS_CONN_TCP, // tcp 链接
+    REDIS_CONN_UNIX // unix 链接
 };
 
+// redis链接的上下文
 /* Context for a connection to Redis */
 typedef struct redisContext {
     int err; /* Error flags, 0 when there is no error */

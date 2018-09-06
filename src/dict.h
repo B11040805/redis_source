@@ -79,6 +79,7 @@ typedef struct dictht {
 
 typedef struct dict {
     dictType *type;
+    // 
     void *privdata;
     // 你可能会疑问，为什么这个属性是2个大小的数组呢，其实正真使用的是ht[0]，而ht[1]是用于扩容hash表时的暂存数组，这一点也很奇葩，
     //同时也很精妙，redis为什么会这么做呢？？？仔细想想你可能会明白，扩容有两种方法，要么一次性扩容，要么渐进性扩容，后面这种扩容是什

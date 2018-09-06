@@ -533,7 +533,7 @@ void redisAsyncHandleRead(redisAsyncContext *ac) {
         redisProcessCallbacks(ac);
     }
 }
-
+// redis同步写？？？
 void redisAsyncHandleWrite(redisAsyncContext *ac) {
     redisContext *c = &(ac->c);
     int done = 0;

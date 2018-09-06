@@ -35,7 +35,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "sds.h"
-
+// redis io的操作类
 struct _rio {
     /* Backend functions.
      * Since this functions do not tolerate short writes or reads the return
@@ -92,6 +92,7 @@ typedef struct _rio rio;
 
 static inline size_t rioWrite(rio *r, const void *buf, size_t len) {
     while (len) {
+        // 为什么chunk的大小是byte
         size_t bytes_to_write = (r->max_processing_chunk && r->max_processing_chunk < len) ? r->max_processing_chunk : len;
         if (r->update_cksum) r->update_cksum(r,buf,bytes_to_write);
         if (r->write(r,buf,bytes_to_write) == 0)

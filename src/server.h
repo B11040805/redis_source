@@ -632,7 +632,7 @@ typedef struct clientReplyBlock {
  * by integers from 0 (the default database) up to the max configured
  * database. The database number is the 'id' field in the structure. */
 typedef struct redisDb {
-    dict *dict;                 /* The keyspace for this DB */
+    dict *dict;                 /* The keyspace for this DB */ // redis key的集合
     dict *expires;              /* Timeout of keys with a timeout set */
     dict *blocking_keys;        /* Keys with clients waiting for data (BLPOP)*/
     dict *ready_keys;           /* Blocked keys that received a PUSH */
@@ -790,20 +790,23 @@ struct sharedObjectsStruct {
 };
 
 /* ZSETs use a specialized version of Skiplists */
+// 跳表的数据结构，为什么放在server.h
+// 跳表的节点
 typedef struct zskiplistNode {
     sds ele;
-    double score;
-    struct zskiplistNode *backward;
+    double score; //跳表都有一个socre 
+    struct zskiplistNode *backward; // 
     struct zskiplistLevel {
         struct zskiplistNode *forward;
         unsigned long span;
-    } level[];
+    } level[]; // 节点中用BW字样标记节点的后退指针，
 } zskiplistNode;
 
 typedef struct zskiplist {
+    // header指向跳表的表头节点，tail指向跳表的表尾节点
     struct zskiplistNode *header, *tail;
-    unsigned long length;
-    int level;
+    unsigned long length; // 记录跳跃表的长度，也就是包含的节点的数量
+    int level;// 当前跳表内，层数最大的那个节点层数
 } zskiplist;
 
 typedef struct zset {
@@ -922,7 +925,7 @@ struct clusterState;
 
 struct redisServer {
     /* General */
-    pid_t pid;                  /* Main process pid. */
+    pid_t pid;                  /* Main process pid. */ 
     char *configfile;           /* Absolute config file path, or NULL */
     char *executable;           /* Absolute executable file path. */
     char **exec_argv;           /* Executable argv vector (copy). */
@@ -1082,6 +1085,7 @@ struct redisServer {
     int aof_stop_sending_diff;     /* If true stop sending accumulated diffs
                                       to child process. */
     sds aof_child_diff;             /* AOF diff accumulator child side. */
+    // 自从上次执行rdb之后的db的change的次数
     /* RDB persistence */
     long long dirty;                /* Changes to DB from the last save */
     long long dirty_before_bgsave;  /* Used to restore dirty on failed BGSAVE */
@@ -1248,6 +1252,7 @@ struct redisServer {
                              execution. */
     int lua_kill;         /* Kill the script if true. */
     int lua_always_replicate_commands; /* Default replication type. */
+
     /* Lazy free */
     int lazyfree_lazy_eviction;
     int lazyfree_lazy_expire;

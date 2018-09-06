@@ -86,7 +86,7 @@ void rdbLoadRaw(rio *rdb, void *buf, uint64_t len) {
         return; /* Not reached. */
     }
 }
-
+// 一行一行地保存
 int rdbSaveType(rio *rdb, unsigned char type) {
     return rdbWriteRaw(rdb,&type,1);
 }
@@ -138,10 +138,10 @@ long long rdbLoadMillisecondTime(rio *rdb, int rdbver) {
  * hold the encoding type. See the RDB_* definitions for more information
  * on the types of encoding. */
 int rdbSaveLen(rio *rdb, uint64_t len) {
-    unsigned char buf[2];
-    size_t nwritten;
+    unsigned char buf[2]; // 
+    size_t nwritten; //
 
-    if (len < (1<<6)) {
+    if (len < (1<<6)) {  
         /* Save a 6 bit len */
         buf[0] = (len&0xFF)|(RDB_6BITLEN<<6);
         if (rdbWriteRaw(rdb,buf,1) == -1) return -1;
@@ -1214,10 +1214,10 @@ werr: /* Write error. */
     if (error && *error == 0) *error = errno;
     return C_ERR;
 }
-
+// rdb持久化，
 /* Save the DB on disk. Return C_ERR on error, C_OK on success. */
 int rdbSave(char *filename, rdbSaveInfo *rsi) {
-    char tmpfile[256];
+    char tmpfile[256]; // 保存成256个文件
     char cwd[MAXPATHLEN]; /* Current working dir path for error messages. */
     FILE *fp;
     rio rdb;
@@ -1278,10 +1278,10 @@ werr:
     unlink(tmpfile);
     return C_ERR;
 }
-
+// 在后台持久化db
 int rdbSaveBackground(char *filename, rdbSaveInfo *rsi) {
     pid_t childpid;
-    long long start;
+    long long start; 
 
     if (server.aof_child_pid != -1 || server.rdb_child_pid != -1) return C_ERR;
 
@@ -1290,6 +1290,7 @@ int rdbSaveBackground(char *filename, rdbSaveInfo *rsi) {
     openChildInfoPipe();
 
     start = ustime();
+    // 起来一个子进程
     if ((childpid = fork()) == 0) {
         int retval;
 

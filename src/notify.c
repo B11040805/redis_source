@@ -94,8 +94,9 @@ sds keyspaceEventsFlagsToString(int flags) {
  * 'event' is a C string representing the event name.
  * 'key' is a Redis object representing the key name.
  * 'dbid' is the database ID where the key lives.  */
+// 事件的名称、产生事件的key 
 void notifyKeyspaceEvent(int type, char *event, robj *key, int dbid) {
-    sds chan;
+    sds chan;  // 
     robj *chanobj, *eventobj;
     int len = -1;
     char buf[24];

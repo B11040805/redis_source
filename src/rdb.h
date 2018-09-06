@@ -123,8 +123,10 @@
 
 #define RDB_SAVE_NONE 0
 #define RDB_SAVE_AOF_PREAMBLE (1<<0)
-
+// rdb持久化
+// rdb保存类型
 int rdbSaveType(rio *rdb, unsigned char type);
+// rdb载入类型
 int rdbLoadType(rio *rdb);
 int rdbSaveTime(rio *rdb, time_t t);
 time_t rdbLoadTime(rio *rdb);
